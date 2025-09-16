@@ -3,9 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>(1) Workplace</title>
-  <!-- Favicon for browser tab -->
-  <link rel="icon" type="image/png" sizes="800x800" href="wp.png">
+  <title>SRT Workplace</title>
+  <link rel="icon" type="image/png" href="wp.png">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -51,15 +50,13 @@
 </head>
 <body>
 <div class="container">
-  <!-- Logo above title -->
-
   <h2>JOB COUNT</h2>
 
   <input type="number" id="break1"  placeholder="1st Break" oninput="saveAndCalculate()">
   <input type="number" id="lunch"   placeholder="Lunch"     oninput="saveAndCalculate()">
   <input type="number" id="break2"  placeholder="2nd Break" oninput="saveAndCalculate()">
   <input type="number" id="eos"     placeholder="EOS"       oninput="saveAndCalculate()">
-  <input type="text"   id="station" placeholder="Station"   oninput="saveAndCalculate()">
+  <input type="text"   id="station" placeholder="Station#" oninput="saveAndCalculate()">
 
   <div class="result-box" id="resultBox"></div>
 </div>
@@ -79,15 +76,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function saveAndCalculate() {
   const allEmpty = fields.every(id => !document.getElementById(id).value.trim());
-
   if (allEmpty) {
-    // Clear localStorage if all inputs are empty
     fields.forEach(id => localStorage.removeItem(id));
   } else {
-    // Save current inputs to localStorage
     fields.forEach(id => localStorage.setItem(id, document.getElementById(id).value));
   }
-
   calculate();
 }
 
@@ -107,17 +100,28 @@ function calculate() {
   const hasAny = b1 > 0 || l > 0 || b2 > 0 || e > 0 || station;
 
   if (hasAny) {
+    // Only show EOD report and spacing if EOS has data
+    if (e > 0) {
+      const today = new Date();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      lines.push(`EOD Report ${mm}/${dd}/${yyyy}`);
+      lines.push(""); // blank line after EOD
+    }
+
+    // Jobcount section
     lines.push("Jobcount");
     if (res1 !== "") lines.push(`1st Break: ${res1}`);
     if (res2 !== "") lines.push(`Lunch: ${res2}`);
     if (res3 !== "") lines.push(`2nd Break: ${res3}`);
     if (res4 !== "") lines.push(`EOS: ${res4}`);
 
+    // Total, Station, notes (only if EOS)
     if (e > 0) {
-      lines.push("");
       lines.push(`Total: ${e}`);
-      if (station) lines.push(`Station: ${station}`);
-      lines.push("");
+      if (station) lines.push("");
+      if (station) lines.push(`Station#: ${station}`);
       lines.push("𝘖𝘯 𝘵𝘪𝘮𝘦 𝘵𝘢𝘨𝘨𝘪𝘯𝘨, 𝘕𝘖 𝘖𝘉 𝘢𝘯𝘥 𝘕𝘖 𝘰𝘷𝘦𝘳 𝘭𝘶𝘯𝘤𝘩");
       lines.push("𝘊𝘰𝘮𝘱𝘭𝘦𝘵𝘦 𝘈𝘴𝘴𝘦𝘵𝘴: 𝘕𝘰 𝘋𝘢𝘮𝘢𝘨𝘦𝘴 & 𝘞𝘪𝘵𝘩𝘰𝘶𝘵 𝘗𝘳𝘪𝘷𝘢𝘤𝘺 𝘚𝘤𝘳𝘦𝘦𝘯");
     }
@@ -128,8 +132,3 @@ function calculate() {
 </script>
 </body>
 </html>
-
-
-
-
-
