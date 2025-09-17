@@ -30,6 +30,7 @@
       border:1px solid rgba(255,255,255,0.3);
       opacity:1;
       transition: all 0.3s ease;
+      display: none; /* Initially hidden */
     }
 
     /* Header with buttons */
@@ -126,21 +127,27 @@
       border:2px solid #888;
     }
 
-    /* Calculate Button (Minimalist) */
+    /* Minimalist Dark Gray Button */
     #showButton {
       position:fixed;
       top:20px;
       left:20px;
-      padding:6px 10px;
+      padding:10px 20px;
       font-size:14px;
       border:none;
       border-radius:5px;
-      background:#4285f4;
+      background:#333; /* Dark gray */
       color:#fff;
       cursor:pointer;
       z-index:9999;
-      display: none; /* Initially hidden */
+      display: block; /* Initially visible */
       font-weight: bold;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+
+    #showButton:hover {
+      opacity: 1;
     }
   </style>
 </head>
@@ -167,7 +174,7 @@
   </div>
 </div>
 
-<button id="showButton" onclick="showCalculator()">Calculate</button>
+<button id="showButton" onclick="showCalculator()">Open Calculator</button>
 
 <script>
 // Fields
@@ -176,6 +183,8 @@ const container = document.getElementById('container');
 const resultBox = document.getElementById('resultBox');
 const transparencySlider = document.getElementById('transparencySlider');
 const showButton = document.getElementById('showButton');
+
+let closeTimer; // Timer for closing calculator
 
 // Drag
 let isDragging=false, offsetX=0, offsetY=0;
@@ -211,11 +220,13 @@ function onDrag(e) {
 function closeCalculator() {
   container.style.display='none';
   showButton.style.display = 'block';
+  clearTimeout(closeTimer); // Clear the previous timer when closing manually
 }
 
 function showCalculator() {
   container.style.display='block';
   showButton.style.display = 'none';
+  resetCloseTimer(); // Start the timer when the calculator is shown
 }
 
 // Load saved
@@ -257,7 +268,7 @@ function calculate() {
   if (e > 0) {
     lines.push(`Total: ${e}`);
     if (station) lines.push("", `Station#: ${station}`);
-    lines.push("𝘖𝘯 𝘵𝘪𝘮𝘦 𝘵𝘢𝘨𝘨𝘪𝘯𝘨, 𝘕𝘖 𝘖𝘉 𝘢𝘯𝘥 𝘕𝘖 𝘰𝘷𝘦𝘳 𝘭𝘶𝘯𝘤𝘩");
+    lines.push("𝘖𝘯 𝘵𝘪𝘮𝘦 𝘵𝘢𝘨𝘨𝘪𝘯𝘨, 𝘕𝘖 𝘖𝘉 𝘢𝘯𝘥 𝘕𝘖 𝘰𝘷𝘦𝘳 𝘭𝘂𝘯𝘤𝘩");
     lines.push("𝘊𝘰𝘮𝘱𝘭𝘦𝘵𝘦 𝘈𝘴𝘴𝘦𝘵𝘴: 𝘕𝘰 𝘋𝘢𝘮𝘢𝘨𝘦𝘴 & 𝘞𝘪𝘵𝘩𝘰𝘶𝘵 𝘗𝘳𝘪𝘷𝘢𝘤𝘺 𝘚𝘤𝘳𝘦𝘦𝘯");
   }
   resultBox.textContent = lines.join("\n");
@@ -278,8 +289,13 @@ function copyToClipboard() {
   document.execCommand('copy');
   document.body.removeChild(ta);
   alert("Copied to clipboard!");
-  container.style.display = 'none';
-  showButton.style.display = 'block'; // Show the "Calculate" button again after closing
+  closeCalculator(); // Close the calculator after copying
+}
+
+// Reset and start close timer
+function resetCloseTimer() {
+  clearTimeout(closeTimer); // Clear any existing timer
+  closeTimer = setTimeout(closeCalculator, 10000); // Close after 10 seconds
 }
 </script>
 
