@@ -10,9 +10,11 @@
     body {
       font-family: Arial, sans-serif;
       background: #111;
-      color: #fff;
+      color: #ccc; /* Gray text for the body */
       padding: 20px;
       overflow: hidden;
+      height: 100vh; /* Make sure body takes up full screen height */
+      cursor: pointer; /* Indicate that clicking anywhere opens the calculator */
     }
 
     /* Floating Calculator Container */
@@ -32,7 +34,7 @@
       display: none; /* Initially hidden */
     }
 
-    /* Header with buttons */
+    /* Header without close button */
     h2 {
       font-weight:300;
       font-size:20px;
@@ -40,28 +42,11 @@
       padding:10px;
       background-color: rgba(51,51,51,0.8);
       border-radius:5px 5px 0 0;
-      color:#fff;
+      color:#ccc; /* Gray text for the header */
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: relative;
-    }
-
-    .header-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .header-buttons button {
-      background-color: transparent;
-      color: #fff;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .header-buttons button:hover {
-      color: #4285f4;
     }
 
     /* Input fields and result box */
@@ -72,12 +57,15 @@
       border:1px solid #555;
       border-radius:4px;
       background:#000;
-      color:#fff;
+      color:#ccc; /* Gray text for inputs and result box */
       font-size:14px;
       opacity:1;
     }
 
-    input::placeholder { color:#888; }
+    input::placeholder { 
+      color:#888; /* Placeholder text in light gray */
+    }
+
     .result-box {
       background:#000;
       border-radius:5px;
@@ -87,8 +75,12 @@
       cursor:pointer;
       transition:color 0.18s ease;
       opacity:1;
+      color: #ccc; /* Gray text color */
     }
-    .result-box:hover { background:#444; }
+
+    .result-box:hover { 
+      background:#444; 
+    }
 
     /* Transparency Slider */
     .slider-container {
@@ -126,28 +118,13 @@
       border:2px solid #888;
     }
 
-    /* Minimalist Dark Gray Button */
-    #showButton {
-      position:fixed;
-      top:20px;
-      left:20px;
-      padding:10px 20px;
-      font-size:14px;
-      border:none;
-      border-radius:5px;
-      background:#333; /* Dark gray */
-      color:#fff;
-      cursor:pointer;
-      z-index:9999;
-      display: block; /* Initially visible */
-      font-weight: bold;
-      opacity: 0.8;
-      transition: opacity 0.3s ease;
+    /* Timer Display */
+    .timer {
+      font-size: 16px;
+      color: #ccc; /* Gray timer text */
+      margin-top: 10px;
     }
 
-    #showButton:hover {
-      opacity: 1;
-    }
   </style>
 </head>
 <body>
@@ -155,9 +132,6 @@
 <div class="container" id="container">
   <h2 id="dragHandle">
     JOB COUNT
-    <div class="header-buttons">
-      <button id="closeButton" onclick="closeCalculator()">❌</button>
-    </div>
   </h2>
 
   <input type="number" id="break1" placeholder="1st Break" oninput="saveAndCalculate()">
@@ -169,11 +143,12 @@
   <div class="result-box" id="resultBox" onclick="copyToClipboard()">Click to Copy</div>
 
   <div class="slider-container">
-    <input type="range" id="transparencySlider" class="slider" min="0" max="100" value="85" oninput="updateTransparency()">
+    <input type="range" id="transparencySlider" class="slider" min="0" max="100" value="65" oninput="updateTransparency()">
   </div>
-</div>
 
-<button id="showButton" onclick="showCalculator()">Open Calculator</button>
+  <!-- Timer Display -->
+  <div id="timerDisplay" class="timer">Timer: 0s</div>
+</div>
 
 <script>
 // Fields
@@ -181,9 +156,14 @@ const fields = ['break1','lunch','break2','eos','station'];
 const container = document.getElementById('container');
 const resultBox = document.getElementById('resultBox');
 const transparencySlider = document.getElementById('transparencySlider');
-const showButton = document.getElementById('showButton');
+const timerDisplay = document.getElementById('timerDisplay');
 
 let closeTimer; // Timer for closing calculator
+let startTime; // Timer start time
+let timerInterval; // Timer interval to update every second
+
+// Set initial transparency based on slider value
+container.style.opacity = transparencySlider.value / 100;
 
 // Drag
 let isDragging=false, offsetX=0, offsetY=0;
@@ -215,24 +195,42 @@ function onDrag(e) {
   }
 }
 
-// Close / Show
-function closeCalculator() {
-  container.style.display='none';
-  showButton.style.display = 'block';
-  clearTimeout(closeTimer); // Clear the previous timer when closing manually
+// Toggle open/close on body click
+document.body.addEventListener('click', function(event) {
+  if (container.style.display === 'none') {
+    showCalculator(); // Open the calculator
+  } else if (!container.contains(event.target)) {
+    closeCalculator(); // Close the calculator if clicking outside
+  }
+});
+
+// Show calculator function
+function showCalculator() {
+  container.style.display = 'block';
+  resetCloseTimer(); // Start the timer when the calculator is shown
+  startTime = Date.now(); // Capture the start time
+  startTimer(); // Start the timer interval
 }
 
-function showCalculator() {
-  container.style.display='block';
-  showButton.style.display = 'none';
-  resetCloseTimer(); // Start the timer when the calculator is shown
+// Close calculator function
+function closeCalculator() {
+  container.style.display = 'none';
+  clearInterval(timerInterval); // Stop the timer when closing the calculator
+}
+
+// Start Timer
+function startTimer() {
+  timerInterval = setInterval(() => {
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
+    timerDisplay.textContent = `Timer: ${elapsedTime}s`;
+  }, 1000); // Update every second
 }
 
 // Load saved
-window.addEventListener('DOMContentLoaded', ()=> {
-  fields.forEach(f=> {
-    const v=localStorage.getItem(f);
-    if(v) document.getElementById(f).value=v;
+window.addEventListener('DOMContentLoaded', () => {
+  fields.forEach(f => {
+    const v = localStorage.getItem(f);
+    if (v) document.getElementById(f).value = v;
   });
   calculate();
 });
@@ -267,7 +265,7 @@ function calculate() {
   if (e > 0) {
     lines.push(`Total: ${e}`);
     if (station) lines.push("", `Station#: ${station}`);
-    lines.push("𝘖𝘯 𝘵𝘪𝘮𝘦 𝘵𝘢𝘨𝘨𝘪𝘯𝘨, 𝘕𝘖 𝘖𝘉 𝘢𝘯𝘥 𝘕𝘖 𝘰𝘷𝘦𝘳 𝘭𝘂𝘯𝘤𝘩");
+    lines.push("𝘖𝘯 𝘵𝘪𝘮𝘦 𝘵𝘢𝘨𝘨𝘪𝘯𝘨, 𝘕𝘖 𝘖𝘉 𝘢𝘯𝘥 𝘕𝘖 𝘰𝘷𝘦𝘳 𝘭𝘶𝘯𝘤𝘩");
     lines.push("𝘊𝘰𝘮𝘱𝘭𝘦𝘵𝘦 𝘈𝘴𝘴𝘦𝘵𝘴: 𝘕𝘰 𝘋𝘢𝘮𝘢𝘨𝘦𝘴 & 𝘞𝘪𝘵𝘩𝘰𝘶𝘵 𝘗𝘳𝘪𝘷𝘢𝘤𝘺 𝘚𝘤𝘳𝘦𝘦𝘯");
   }
   resultBox.textContent = lines.join("\n");
