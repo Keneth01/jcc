@@ -20,25 +20,26 @@
     /* Floating Calculator Container */
     .container {
       max-width: 420px;
-      max-height: 80vh; /* Limit container height to 80% of the screen */
       background: rgba(34,34,34,0.85);
       border-radius:5px;
       position:absolute;
       top:20px;
       left:20px;
       resize:both;
-      overflow:auto;
       border:1px solid rgba(255,255,255,0.3);
-      opacity:1;
-      transition: all 0.3s ease;
+      opacity:0.5; /* Set default opacity to 50% */
+      transition: opacity 0.5s ease; /* Smooth transition on hover */
       display: none; /* Initially hidden */
+      word-wrap: break-word; /* Ensures text wraps within the container */
+      padding: 10px;
+      height: auto; /* Allow container to grow with content */
+      min-height: 50px; /* Ensure minimum size */
     }
 
     /* Header without close button */
     h2 {
       font-weight:300;
       font-size:20px;
-      cursor:move;
       padding:10px;
       background-color: rgba(51,51,51,0.8);
       border-radius:5px 5px 0 0;
@@ -82,42 +83,6 @@
       background:#444; 
     }
 
-    /* Transparency Slider */
-    .slider-container {
-      margin-top:10px;
-      text-align:center;
-      padding:10px 0;
-    }
-
-    .slider {
-      width:100%;
-      height:6px;
-      background:#444;
-      border-radius:3px;
-      cursor:pointer;
-      -webkit-appearance:none;
-      appearance:none;
-      outline:none;
-    }
-
-    .slider::-webkit-slider-thumb {
-      width:14px;
-      height:14px;
-      background:#fff;
-      border-radius:50%;
-      border:2px solid #888;
-      -webkit-appearance:none;
-      appearance:none;
-    }
-
-    .slider::-moz-range-thumb {
-      width:14px;
-      height:14px;
-      background:#fff;
-      border-radius:50%;
-      border:2px solid #888;
-    }
-
     /* Timer Display */
     .timer {
       font-size: 16px;
@@ -142,10 +107,6 @@
 
   <div class="result-box" id="resultBox" onclick="copyToClipboard()">Click to Copy</div>
 
-  <div class="slider-container">
-    <input type="range" id="transparencySlider" class="slider" min="0" max="100" value="65" oninput="updateTransparency()">
-  </div>
-
   <!-- Timer Display -->
   <div id="timerDisplay" class="timer">Timer: 0s</div>
 </div>
@@ -155,45 +116,14 @@
 const fields = ['break1','lunch','break2','eos','station'];
 const container = document.getElementById('container');
 const resultBox = document.getElementById('resultBox');
-const transparencySlider = document.getElementById('transparencySlider');
 const timerDisplay = document.getElementById('timerDisplay');
 
 let closeTimer; // Timer for closing calculator
 let startTime; // Timer start time
 let timerInterval; // Timer interval to update every second
 
-// Set initial transparency based on slider value
-container.style.opacity = transparencySlider.value / 100;
-
-// Drag
-let isDragging=false, offsetX=0, offsetY=0;
-document.getElementById('dragHandle').addEventListener('mousedown', e=> {
-  isDragging=true;
-  offsetX=e.clientX-container.offsetLeft;
-  offsetY=e.clientY-container.offsetTop;
-  document.addEventListener('mousemove', onDrag);
-  document.addEventListener('mouseup', ()=> {
-    isDragging=false;
-    document.removeEventListener('mousemove', onDrag);
-  });
-});
-
-function onDrag(e) { 
-  if(isDragging){
-    const maxX = window.innerWidth - container.offsetWidth - 20;
-    const maxY = window.innerHeight - container.offsetHeight - 20;
-    let newLeft = e.clientX - offsetX;
-    let newTop = e.clientY - offsetY;
-
-    if (newLeft < 0) newLeft = 0;
-    if (newLeft > maxX) newLeft = maxX;
-    if (newTop < 0) newTop = 0;
-    if (newTop > maxY) newTop = maxY;
-
-    container.style.left = `${newLeft}px`;
-    container.style.top = `${newTop}px`;
-  }
-}
+// Set default transparency to 50% (No slider needed)
+container.style.opacity = 0.5;
 
 // Toggle open/close on body click
 document.body.addEventListener('click', function(event) {
@@ -271,11 +201,6 @@ function calculate() {
   resultBox.textContent = lines.join("\n");
 }
 
-// Transparency
-function updateTransparency() {
-  container.style.opacity = transparencySlider.value / 100;
-}
-
 // Copy & Auto-hide
 function copyToClipboard() {
   const text = resultBox.textContent;
@@ -294,6 +219,15 @@ function resetCloseTimer() {
   clearTimeout(closeTimer); // Clear any existing timer
   closeTimer = setTimeout(closeCalculator, 10000); // Close after 10 seconds
 }
+
+// Hover effect dynamically changing the opacity
+container.addEventListener('mouseenter', () => {
+  container.style.opacity = 1;  // Full opacity when hovered
+});
+
+container.addEventListener('mouseleave', () => {
+  container.style.opacity = 0.5; // Reset opacity when not hovered
+});
 </script>
 
 </body>
