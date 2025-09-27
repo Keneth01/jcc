@@ -4,21 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ㅤ</title>
-  <link rel="icon" type="image/png" href="key.png">
+  <link rel="shortcut icon" href="key.png" type="image/png">
+  <link rel="icon" href="key.png" type="image/png">
   <meta http-equiv="Permissions-Policy" content="clipboard-read/write=*, geolocation=(self)">
   <style>
     body, h2, input, .result-box, button { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: Arial, sans-serif;
       background: #111;
-      color: #ccc; /* Gray text for the body */
+      color: #ccc;
       padding: 20px;
       overflow: hidden;
-      height: 100vh; /* Make sure body takes up full screen height */
-      cursor: pointer; /* Indicate that clicking anywhere opens the calculator */
+      height: 100vh;
+      cursor: pointer;
     }
-
-    /* Floating Calculator Container */
     .container {
       max-width: 420px;
       background: rgba(34,34,34,0.85);
@@ -28,30 +27,26 @@
       left:20px;
       resize:both;
       border:1px solid rgba(255,255,255,0.3);
-      opacity:0.5; /* Set default opacity to 50% */
-      transition: opacity 0.5s ease; /* Smooth transition on hover */
-      display: none; /* Initially hidden */
-      word-wrap: break-word; /* Ensures text wraps within the container */
+      opacity:0.5;
+      transition: opacity 0.5s ease;
+      display: none;
+      word-wrap: break-word;
       padding: 10px;
-      height: auto; /* Allow container to grow with content */
-      min-height: 50px; /* Ensure minimum size */
+      height: auto;
+      min-height: 50px;
     }
-
-    /* Header without close button */
     h2 {
       font-weight:300;
       font-size:20px;
       padding:10px;
       background-color: rgba(51,51,51,0.8);
       border-radius:5px 5px 0 0;
-      color:#ccc; /* Gray text for the header */
+      color:#ccc;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: relative;
     }
-
-    /* Input fields and result box */
     input, .result-box {
       width:100%;
       padding:8px;
@@ -59,15 +54,13 @@
       border:1px solid #555;
       border-radius:4px;
       background:#000;
-      color:#ccc; /* Gray text for inputs and result box */
+      color:#ccc;
       font-size:14px;
       opacity:1;
     }
-
     input::placeholder { 
-      color:#888; /* Placeholder text in light gray */
+      color:#888;
     }
-
     .result-box {
       background:#000;
       border-radius:5px;
@@ -77,20 +70,16 @@
       cursor:pointer;
       transition:color 0.18s ease;
       opacity:1;
-      color: #ccc; /* Gray text color */
+      color: #ccc;
     }
-
     .result-box:hover { 
       background:#444; 
     }
-
-    /* Timer Display */
     .timer {
       font-size: 16px;
-      color: #ccc; /* Gray timer text */
+      color: #ccc;
       margin-top: 10px;
     }
-
   </style>
 </head>
 <body>
@@ -113,51 +102,44 @@
 </div>
 
 <script>
-// Fields
 const fields = ['break1','lunch','break2','eos','station'];
 const container = document.getElementById('container');
 const resultBox = document.getElementById('resultBox');
 const timerDisplay = document.getElementById('timerDisplay');
 
-let closeTimer; // Timer for closing calculator
-let startTime; // Timer start time
-let timerInterval; // Timer interval to update every second
+let closeTimer;
+let startTime;
+let timerInterval;
 
-// Set default transparency to 50% (No slider needed)
 container.style.opacity = 0.5;
 
-// Toggle open/close on body click
 document.body.addEventListener('click', function(event) {
   if (container.style.display === 'none') {
-    showCalculator(); // Open the calculator
+    showCalculator();
   } else if (!container.contains(event.target)) {
-    closeCalculator(); // Close the calculator if clicking outside
+    closeCalculator();
   }
 });
 
-// Show calculator function
 function showCalculator() {
   container.style.display = 'block';
-  resetCloseTimer(); // Start the timer when the calculator is shown
-  startTime = Date.now(); // Capture the start time
-  startTimer(); // Start the timer interval
+  resetCloseTimer();
+  startTime = Date.now();
+  startTimer();
 }
 
-// Close calculator function
 function closeCalculator() {
   container.style.display = 'none';
-  clearInterval(timerInterval); // Stop the timer when closing the calculator
+  clearInterval(timerInterval);
 }
 
-// Start Timer
 function startTimer() {
   timerInterval = setInterval(() => {
-    const elapsedTime = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
     timerDisplay.textContent = `Timer: ${elapsedTime}s`;
-  }, 1000); // Update every second
+  }, 1000);
 }
 
-// Load saved
 window.addEventListener('DOMContentLoaded', () => {
   fields.forEach(f => {
     const v = localStorage.getItem(f);
@@ -166,7 +148,6 @@ window.addEventListener('DOMContentLoaded', () => {
   calculate();
 });
 
-// Save & Calculate
 function saveAndCalculate() {
   const anyFilled = fields.some(id => document.getElementById(id).value.trim());
   fields.forEach(id => {
@@ -177,7 +158,6 @@ function saveAndCalculate() {
   calculate();
 }
 
-// Calculate
 function calculate() {
   const vals = fields.map(id => id === "station" ? document.getElementById(id).value : parseInt(document.getElementById(id).value) || 0);
   const [b1, l, b2, e, station] = vals;
@@ -202,7 +182,6 @@ function calculate() {
   resultBox.textContent = lines.join("\n");
 }
 
-// Copy & Auto-hide
 function copyToClipboard() {
   const text = resultBox.textContent;
   const ta = document.createElement('textarea');
@@ -212,22 +191,20 @@ function copyToClipboard() {
   document.execCommand('copy');
   document.body.removeChild(ta);
   alert("Copied to clipboard!");
-  closeCalculator(); // Close the calculator after copying
+  closeCalculator();
 }
 
-// Reset and start close timer
 function resetCloseTimer() {
-  clearTimeout(closeTimer); // Clear any existing timer
-  closeTimer = setTimeout(closeCalculator, 10000); // Close after 10 seconds
+  clearTimeout(closeTimer);
+  closeTimer = setTimeout(closeCalculator, 10000);
 }
 
-// Hover effect dynamically changing the opacity
 container.addEventListener('mouseenter', () => {
-  container.style.opacity = 1;  // Full opacity when hovered
+  container.style.opacity = 1;
 });
 
 container.addEventListener('mouseleave', () => {
-  container.style.opacity = 0.5; // Reset opacity when not hovered
+  container.style.opacity = 0.5;
 });
 </script>
 
