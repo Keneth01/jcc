@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="key.png" type="image/png">
-<link rel="shortcut icon" href="key.png" type="image/png">
-<link rel="apple-touch-icon" href="key.png">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ㅤ</title>
-  <link rel="shortcut icon" href="key.png" type="image/png">
-  <link rel="icon" href="key.png" type="image/png">
+
+  <!-- Favicon pointing to workplace/key.png -->
+  <link rel="icon" href="workplace/key.png" type="image/png">
+  <link rel="shortcut icon" href="workplace/key.png" type="image/png">
+  <link rel="apple-touch-icon" href="workplace/key.png">
+
   <meta http-equiv="Permissions-Policy" content="clipboard-read/write=*, geolocation=(self)">
   <style>
     body, h2, input, .result-box, button { margin:0; padding:0; box-sizing:border-box; }
@@ -99,8 +100,6 @@
   <input type="text" id="station" placeholder="Station#" oninput="saveAndCalculate()">
 
   <div class="result-box" id="resultBox" onclick="copyToClipboard()">Click to Copy</div>
-
-  <!-- Timer Display -->
   <div id="timerDisplay" class="timer">Timer: 0s</div>
 </div>
 
@@ -213,4 +212,3 @@ container.addEventListener('mouseleave', () => {
 
 </body>
 </html>
-
