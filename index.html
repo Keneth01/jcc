@@ -5,11 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ㅤ</title>
 
-  <!-- Favicon pointing to workplace/key.png -->
-  <link rel="icon" href="workplace/key.png" type="image/png">
-  <link rel="shortcut icon" href="workplace/key.png" type="image/png">
-  <link rel="apple-touch-icon" href="workplace/key.png">
-
   <meta http-equiv="Permissions-Policy" content="clipboard-read/write=*, geolocation=(self)">
   <style>
     body, h2, input, .result-box, button { margin:0; padding:0; box-sizing:border-box; }
@@ -26,10 +21,11 @@
       max-width: 420px;
       background: rgba(34,34,34,0.85);
       border-radius:5px;
-      position:absolute;
-      top:20px;
-      left:20px;
-      resize:both;
+      position: absolute;
+      top: 20px; /* Distance from top */
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%); /* Horizontal centering */
+      resize: both;
       border:1px solid rgba(255,255,255,0.3);
       opacity:0.5;
       transition: opacity 0.5s ease;
